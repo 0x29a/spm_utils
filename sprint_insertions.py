@@ -117,10 +117,7 @@ def ticket_insertion_date(ticket):
         for item in items:
             if item.field == sprint_item_field_name:
                 if item.toString is not None and item.toString not in not_sprint:
-                    try:
-                        sprint_code = re.findall(SPRINT_REGEX, item.toString)[0]
-                    except:
-                        import pdb; pdb.set_trace()
+                    sprint_code = re.findall(SPRINT_REGEX, item.toString)[0]
                     if sprint_code == get_next_sprint_code():
                         transition_to_current_sprint_date = datetime.strptime(
                             history.created, JIRA_TIME_FORMAT
