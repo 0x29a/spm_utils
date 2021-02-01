@@ -109,7 +109,7 @@ def ticket_insertion_date(ticket):
 
     ticket_created = datetime.strptime(ticket.fields.created, JIRA_TIME_FORMAT)
 
-    transition_to_current_sprint_date = None
+    transition_to_next_sprint_date = None
 
     histories = ticket.changelog.histories
     for history in histories:
@@ -119,14 +119,14 @@ def ticket_insertion_date(ticket):
                 if item.toString is not None and item.toString not in not_sprint:
                     sprint_code = re.findall(SPRINT_REGEX, item.toString)[0]
                     if sprint_code == get_next_sprint_code():
-                        transition_to_current_sprint_date = datetime.strptime(
+                        transition_to_next_sprint_date = datetime.strptime(
                             history.created, JIRA_TIME_FORMAT
                         )
 
-    if transition_to_current_sprint_date is None:
-        print(f"WARNING: No transition to current sprint found for {ticket.key}.")
+    if transition_to_next_sprint_date is None:
+        print(f"WARNING: No transition to next sprint found for {ticket.key}.")
 
-    return transition_to_current_sprint_date or ticket_created
+    return transition_to_next_sprint_date or ticket_created
 
 
 def ticket_inserted_after_deadline(ticket):
