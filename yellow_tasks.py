@@ -49,7 +49,7 @@ for text, query in to_check:
             text,
             "\n".join(
                 [
-                    "[{issue}](https://tasks.opencraft.com/browse/{issue})".format(
+                    "- [{issue}](https://tasks.opencraft.com/browse/{issue})".format(
                         issue=issue.key
                     )
                     for issue in issues
