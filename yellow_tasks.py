@@ -33,27 +33,37 @@ yellow_issues = jira.search_issues(
 to_check = [
     ("Yellow tickets", '"Ready for a sprint" = 0'),
     ("Flagged tickets", "flagged != null"),
-    ("Tickets without reviewers", '"Reviewer 1" = null'),
+    ("Tickets without assignees or reviewers", '(assignee = null) and ("Reviewer 1" = null)'),
+    ("Tickets without reviewers", '("Reviewer 1" = null) and (assignee != null)'),
+    ("Tickets without assignees", '("Reviewer 1" != null) and (assignee = null)'),
     (
         "Tickets without remaining estimate",
         "(remainingEstimate = 0 or remainingEstimate = null)",
     ),
     ("Tickets without story points", '"Story Points" = null'),
-    ("Tickets without assignees", "assignee = null"),
 ]
 
 for text, query in to_check:
+    grouped = {}
     issues = jira.search_issues("sprint={} and {}".format(next_sprint_code, query))
-    print(
-        "{}:\n{}\n".format(
-            text,
+    
+    for issue in issues:
+        to_ping = issue.fields.assignee or issue.fields.reporter
+        grouped.setdefault(to_ping, []).append(issue.key)
+
+    print('\n\n\n')
+    print('—' * 200)
+    print(f'{text}')
+    print('—' * 200)
+    for to_ping, keys in grouped.items():
+        print(f'****** To ping: {to_ping}')
+        print(
             "\n".join(
                 [
-                    "- [{issue}](https://tasks.opencraft.com/browse/{issue})".format(
-                        issue=issue.key
+                    "https://tasks.opencraft.com/browse/{key}".format(
+                        key=key
                     )
-                    for issue in issues
+                    for key in keys
                 ]
-            ),
+            )
         )
-    )
